@@ -5,6 +5,7 @@ Python wrapper for libnodave, a PLC communication library
 """
 import ctypes
 import logging
+from libnodave.exceptions import LibDaveException
 
 import libnodave.types
 import libnodave.lib
@@ -13,29 +14,25 @@ from libnodave.utils import int_to_bitarr
 logger = logging.getLogger(__name__)
 
 
-class LibDaveException(BaseException):
-    pass
-
-
 class Libnodave(object):
     def __init__(self):
         self.fds = libnodave.types.DaveOSserialType()
         self.di = None
         self.dave = libnodave.lib.init_dll()
         self.buffer = ctypes.create_string_buffer(1024)
-        #self.buffer = libnodave.types.buffer_type()
         self.buffer_p = ctypes.pointer(self.buffer)
 
     def set_port(self, port, baud='9600', parity='E'):
         """
-            set a serial connection port
+        set a serial connection port
         """
         self.fds.rfd = self.dave.setPort(port, baud, parity)
         self.fds.wfd = self.fds.rfd
 
     def open_socket(self, ip, port=102):
         logger.debug("connecting to %s:%s" % (ip, port))
-        self.fds.rfd = self.dave.openSocket(port, ip)
+        socket = self.dave.openSocket(port, ip)
+        self.fds.rfd = socket
         self.fds.wfd = self.fds.rfd
         
     def new_interface(self, name, localMPI, protocol, speed):

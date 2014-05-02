@@ -1,60 +1,52 @@
-import os
 import ctypes
+import platform
+from ctypes.util import find_library
 from libnodave.types import DaveOSserialType
-
-#locate the acutal location so we will later find the
-#libnodave-libs
-APPDIR = os.path.dirname(os.path.abspath(__file__))
+from libnodave.exceptions import LibDaveException
 
 
-def init_dll():
+def init_dll(lib_location=None):
     """
     initiate the os depending dll-File
     set argtypes and resttypes for used functions
     """
+    lib_location = lib_location or find_library('libnodave')
 
-    if os.name == 'nt':
-        DLL_LOC = os.path.join(APPDIR, 'libnodave', 'win', 'libnodave.dll')
-    elif os.name == 'posix':
-        DLL_LOC = 'libnodave.so'
+    if not lib_location:
+        msg = "can't find libnodave library. If installed, try running ldconfig"
+        raise LibDaveException(msg)
+
+    if platform.system() == "Windows":
+        dave = ctypes.WinDLL(lib_location)
     else:
-        print 'only win and linux supportet yet'
-    if os.name == 'nt':
-        dave = ctypes.windll.LoadLibrary(DLL_LOC)
-    else:
-        dave = ctypes.cdll.LoadLibrary(DLL_LOC)
+        dave = ctypes.cdll.LoadLibrary(lib_location)
 
     dave.setPort.restype = ctypes.c_int
     dave.setPort.argtypes = [ctypes.c_char_p,
-                                  ctypes.c_char_p,
-                                  ctypes.c_char]
+                             ctypes.c_char_p,
+                             ctypes.c_char]
 
     dave.daveNewInterface.restype = ctypes.c_void_p
     dave.daveNewInterface.argtypes = [DaveOSserialType,
-                                           ctypes.c_char_p,
-                                           ctypes.c_int,
-                                           ctypes.c_int,
-                                           ctypes.c_int]
+                                      ctypes.c_char_p,
+                                      ctypes.c_int,
+                                      ctypes.c_int,
+                                      ctypes.c_int]
 
     dave.openSocket.restype = ctypes.c_int
-    dave.openSocket.argtypes = [
-                                           ctypes.c_int,
-                                           ctypes.c_char_p,
-                                    ]
+    dave.openSocket.argtypes = [ctypes.c_int, ctypes.c_char_p]
 
     dave.daveSetDebug.restype = ctypes.c_void_p
     dave.daveSetDebug.argtypes = [ ctypes.c_int ]
-
-
 
     dave.daveInitAdapter.restype = ctypes.c_void_p
     dave.daveInitAdapter.argtypes = [ctypes.c_void_p]
 
     dave.daveNewConnection.restype = ctypes.c_void_p
     dave.daveNewConnection.argtypes = [ctypes.c_void_p,
-                                            ctypes.c_int,
-                                            ctypes.c_int,
-                                            ctypes.c_int]
+                                       ctypes.c_int,
+                                       ctypes.c_int,
+                                       ctypes.c_int]
 
     dave.daveStop.restype = ctypes.c_int
     dave.daveStop.argtypes = [ctypes.c_void_p]
@@ -64,7 +56,7 @@ def init_dll():
 
     dave.daveSetTimeout.restype = ctypes.c_void_p
     dave.daveSetTimeout.argtypes = [ctypes.c_void_p,
-                                         ctypes.c_int]
+                                    ctypes.c_int]
 
     dave.daveGetU8.restype = ctypes.c_int
     dave.daveGetU8.argtypes = [ctypes.c_void_p]
@@ -80,27 +72,27 @@ def init_dll():
 
     dave.daveReadBytes.restype = ctypes.c_int
     dave.daveReadBytes.argtypes = [ctypes.c_void_p,
-                                        ctypes.c_int,
-                                        ctypes.c_int,
-                                        ctypes.c_int,
-                                        ctypes.c_int,
-                                        ctypes.c_void_p]
+                                   ctypes.c_int,
+                                   ctypes.c_int,
+                                   ctypes.c_int,
+                                   ctypes.c_int,
+                                   ctypes.c_void_p]
 
     dave.daveGetCounterValue.restype = ctypes.c_int
     dave.daveGetCounterValue.argtypes = [ctypes.c_void_p,
-                                              ctypes.c_int,
-                                              ctypes.c_int,
-                                              ctypes.c_int,
-                                              ctypes.c_int,
-                                              ctypes.c_void_p]
-
-    dave.daveWriteBytes.restype = ctypes.c_int
-    dave.daveWriteBytes.argtypes = [ctypes.c_void_p,
                                          ctypes.c_int,
                                          ctypes.c_int,
                                          ctypes.c_int,
                                          ctypes.c_int,
                                          ctypes.c_void_p]
+
+    dave.daveWriteBytes.restype = ctypes.c_int
+    dave.daveWriteBytes.argtypes = [ctypes.c_void_p,
+                                    ctypes.c_int,
+                                    ctypes.c_int,
+                                    ctypes.c_int,
+                                    ctypes.c_int,
+                                    ctypes.c_void_p]
 
     dave.daveStrerror.restype = ctypes.c_char_p
     dave.daveStrerror.argtypes = [ctypes.c_int]

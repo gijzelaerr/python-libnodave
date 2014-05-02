@@ -1,10 +1,13 @@
 import unittest
+import logging
+import libnodave.lib
 
-import libnodave
+logging.basicConfig(level=logging.DEBUG)
+
 
 class TestLibNoDave(unittest.TestCase):
     def setUp(self):
-        pass
+        libnodave.lib.init_dll()
 
     def testLibNoDave(self):
         pass
