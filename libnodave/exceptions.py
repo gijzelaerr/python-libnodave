@@ -1,3 +1,3 @@
 
-class LibDaveException(BaseException):
+class LibNoDaveException(BaseException):
     pass

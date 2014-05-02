@@ -5,7 +5,7 @@ Python wrapper for libnodave, a PLC communication library
 """
 import ctypes
 import logging
-from libnodave.exceptions import LibDaveException
+from libnodave.exceptions import LibNoDaveException
 
 import libnodave.types
 import libnodave.lib
@@ -101,7 +101,7 @@ class Libnodave(object):
         if error:
             msg =self.str_error(error)
             logging.error(msg)
-            raise LibDaveException(msg)
+            raise LibNoDaveException(msg)
         return bytearray(buffer)
     
     def get_counter_value(self, counter_number):

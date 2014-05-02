@@ -2,7 +2,7 @@ import ctypes
 import platform
 from ctypes.util import find_library
 from libnodave.types import DaveOSserialType
-from libnodave.exceptions import LibDaveException
+from libnodave.exceptions import LibNoDaveException
 
 
 def init_dll(lib_location=None):
@@ -14,7 +14,7 @@ def init_dll(lib_location=None):
 
     if not lib_location:
         msg = "can't find libnodave library. If installed, try running ldconfig"
-        raise LibDaveException(msg)
+        raise LibNoDaveException(msg)
 
     if platform.system() == "Windows":
         dave = ctypes.WinDLL(lib_location)
